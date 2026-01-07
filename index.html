@@ -2,9 +2,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>SPACECRAFTS PRICE TAG</title>
+<title>Price Tags – 4 per A4</title>
 
 <style>
+/* ================= A4 PRINT SETUP ================= */
 @page { size: A4; margin: 5mm; }
 
 body {
@@ -12,43 +13,33 @@ body {
   padding: 10px;
 }
 
-/* PAGE HEADING */
-#pageTitle {
-  text-align: center;
-  font-size: 28px;
-  font-weight: bold;
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-}
-
-/* PRINT SAFETY */
+/* Force background colors in print */
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
   #controls,
-  #printBtn,
-  #pageTitle {
+  #printBtn {
     display: none !important;
   }
 }
 
-/* PRINT BUTTON */
+/* ================= PRINT BUTTON ================= */
 #printBtn {
   position: fixed;
   top: 12px;
   right: 12px;
-  padding: 12px 18px;
+  z-index: 9999;
+  padding: 10px 16px;
   background: #222;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  z-index: 999;
 }
 
-/* INPUT PANEL */
+/* ================= INPUT PANEL ================= */
 #controls {
   background: #f4f4f4;
   padding: 12px;
@@ -56,54 +47,23 @@ body {
   border-radius: 6px;
 }
 
-#controls input,
-#controls button {
+#controls input {
   width: 100%;
-  margin-bottom: 8px;
-  padding: 10px;
-  font-size: 14px;
-}
-
-/* SPEC LIST – CLEAN UI */
-#specList {
-  margin-bottom: 8px;
-}
-
-.spec-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  padding: 6px 10px;
+  padding: 6px;
   margin-bottom: 6px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  font-size: 13px;
 }
 
-.spec-text {
-  color: #333;
-}
-
-.spec-remove {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #e0e0e0;
-  color: #555;
-  border: none;
+#controls button {
+  padding: 8px 14px;
   cursor: pointer;
-  font-size: 14px;
-  line-height: 20px;
-  text-align: center;
 }
 
-.spec-remove:hover {
-  background: #c62828;
-  color: #fff;
-}
-
-/* A4 GRID */
+/* ================= A4 GRID (4 TAGS) ================= */
+/*
+A4 = 210 × 297 mm
+Each tag ≈ 96.34 × 139.52 mm
+2 × 2 grid = EXACTLY 4 per A4
+*/
 .wrapper {
   display: grid;
   grid-template-columns: 96.34mm 96.34mm;
@@ -111,53 +71,38 @@ body {
   gap: 6mm;
 }
 
-/* CARD – LOCKED GRID */
+/* ================= CARD (1/4 A4) ================= */
 .card {
   width: 96.34mm;
   height: 139.52mm;
   border: 1px solid #999;
   padding: 5mm;
   box-sizing: border-box;
-
-  display: grid;
-  grid-template-rows: 16mm 1fr auto 20mm;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   position: relative;
 }
 
-/* EDIT / DELETE BUTTONS */
+/* Edit/Delete buttons */
 .card-actions {
   position: absolute;
-  top: 2mm;
-  left: 2mm;
+  top: 3px;
+  left: 3px;
   display: flex;
-  gap: 6px;
-  z-index: 10;
+  gap: 4px;
 }
 
 .card-actions button {
-  font-size: 11px;
-  padding: 4px 6px;
+  font-size: 10px;
+  padding: 2px 6px;
   cursor: pointer;
-  border: none;
-  border-radius: 4px;
 }
 
-.edit-btn {
-  background: #1976d2;
-  color: #fff;
-}
-
-.delete-btn {
-  background: #c62828;
-  color: #fff;
-}
-
-/* HEADER */
+/* ================= HEADER ================= */
 .header {
-  background: #e0e0e0;
   display: flex;
-  align-items: center;
+  gap: 3mm;
+  background: #e0e0e0;
   padding: 3mm;
 }
 
@@ -165,12 +110,19 @@ body {
   flex: 1;
   font-size: 18px;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
+/* ================= LOGO ================= */
 .logo-box {
   width: 10mm;
   height: 10mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo-box img {
@@ -179,12 +131,15 @@ body {
   object-fit: contain;
 }
 
-/* IMAGE */
+/* ================= IMAGE ================= */
 .image-box {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  margin: 4mm 0;
+  min-height: 30mm;
+  max-height: 34mm;
 }
 
 .product-img {
@@ -193,12 +148,11 @@ body {
   object-fit: contain;
 }
 
-/* SPECS (PRINT) */
+/* ================= SPECS ================= */
 .spec {
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
-  margin-bottom: 2mm;
 }
 
 .spec td {
@@ -206,18 +160,21 @@ body {
   padding: 2mm;
 }
 
-.spec tr:nth-child(n+5) {
-  display: none;
+.spec td:first-child {
+  font-weight: bold;
+  width: 45%;
 }
 
-/* PRICE */
+.spec td:last-child {
+  text-align: right;
+}
+
+/* ================= PRICE ================= */
 .price-box {
-  height: 20mm;
   background: #e0e0e0;
   text-align: center;
-  padding: 2.5mm 3mm 3.5mm;
-  box-sizing: border-box;
-  border-radius: 2mm;
+  margin-top: 4mm;
+  padding: 4mm;
 }
 
 .mrp {
@@ -228,32 +185,15 @@ body {
 .offer {
   font-size: 42px;
   font-weight: bold;
-  white-space: nowrap;
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
-  .wrapper {
-    grid-template-columns: 1fr;
-  }
-  .card {
-    width: 100%;
-    height: auto;
-    grid-template-rows: auto auto auto auto;
-  }
-  .offer {
-    font-size: 32px;
-  }
 }
 </style>
 </head>
 
 <body>
 
-<h1 id="pageTitle">SPACECRAFTS PRICE TAG</h1>
-
 <button id="printBtn" onclick="window.print()">🖨️ Print</button>
 
+<!-- ================= INPUT CONTROLS ================= -->
 <div id="controls">
   <h3 id="formTitle">Add Product</h3>
 
@@ -269,130 +209,120 @@ body {
   <input id="mrp" placeholder="MRP">
   <input id="price" placeholder="Offer Price">
 
-  <button onclick="saveProduct()" id="saveBtn">Add Product</button>
+  <button id="saveBtn" onclick="saveProduct()">Add Product Card</button>
 </div>
 
+<!-- ================= PRINT AREA ================= -->
 <div class="wrapper" id="pages"></div>
 
 <script>
+/* ================= STANDARD LOGO ================= */
 const LOGO_URL =
 "https://drive.google.com/thumbnail?id=1SqBvCFsgBU3HSVlUbsroW73rV9M8l8ts&sz=w400";
 
+/* ================= STATE ================= */
 let products = [];
 let specs = [];
 let editIndex = null;
 
-/* SPEC HANDLING */
+/* ================= SPECS ================= */
 function addSpec() {
-  if (!specKey.value || !specVal.value || specs.length >= 4) return;
+  if (!specKey.value || !specVal.value) return;
   specs.push([specKey.value, specVal.value]);
   specKey.value = specVal.value = "";
-  renderSpecList();
+  specList.innerHTML = specs.map(s => s.join(" : ")).join("<br>");
 }
 
-function removeSpec(i) {
-  specs.splice(i, 1);
-  renderSpecList();
-}
-
-function renderSpecList() {
-  specList.innerHTML = "";
-  specs.forEach((s, i) => {
-    specList.innerHTML += `
-      <div class="spec-item">
-        <span class="spec-text">${s[0]} : ${s[1]}</span>
-        <button class="spec-remove" onclick="removeSpec(${i})">×</button>
-      </div>
-    `;
-  });
-}
-
-/* SAVE / UPDATE PRODUCT */
+/* ================= SAVE / UPDATE ================= */
 function saveProduct() {
   const file = imageFile.files[0];
-  if (!file && editIndex === null) return alert("Select product image");
+
+  if (!file && editIndex === null) {
+    alert("Please select product image");
+    return;
+  }
 
   const reader = new FileReader();
   reader.onload = e => {
-    const p = {
+    const product = {
       title: title.value,
-      image: file ? e.target.result : products[editIndex].image,
+      image: editIndex !== null && !file ? products[editIndex].image : e.target.result,
       specs: [...specs],
       mrp: mrp.value,
       price: price.value
     };
 
-    editIndex === null ? products.push(p) : products[editIndex] = p;
+    if (editIndex === null) products.push(product);
+    else products[editIndex] = product;
+
     resetForm();
-    renderProducts();
+    render();
   };
 
   file ? reader.readAsDataURL(file) : reader.onload();
 }
 
-/* RENDER PRODUCTS */
-function renderProducts() {
+/* ================= RENDER ================= */
+function render() {
   pages.innerHTML = "";
   products.forEach((p, i) => {
     pages.innerHTML += `
-      <div class="card">
-        <div class="card-actions">
-          <button class="edit-btn" onclick="editProduct(${i})">✏️</button>
-          <button class="delete-btn" onclick="deleteProduct(${i})">🗑️</button>
-        </div>
-
-        <div class="header">
-          <div class="header-title">${p.title}</div>
-          <div class="logo-box"><img src="${LOGO_URL}"></div>
-        </div>
-
-        <div class="image-box">
-          <img src="${p.image}" class="product-img">
-        </div>
-
-        <table class="spec">
-          ${p.specs.map(s => `<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}
-        </table>
-
-        <div class="price-box">
-          <div class="mrp">MRP ₹${p.mrp}</div>
-          <div class="offer">₹${p.price}</div>
-        </div>
+    <div class="card">
+      <div class="card-actions">
+        <button onclick="editProduct(${i})">✏️</button>
+        <button onclick="deleteProduct(${i})">🗑️</button>
       </div>
-    `;
+
+      <div class="header">
+        <div class="header-title">${p.title}</div>
+        <div class="logo-box"><img src="${LOGO_URL}"></div>
+      </div>
+
+      <div class="image-box">
+        <img src="${p.image}" class="product-img">
+      </div>
+
+      <table class="spec">
+        ${p.specs.map(s => `<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}
+      </table>
+
+      <div class="price-box">
+        <div class="mrp">MRP ₹${p.mrp}</div>
+        <div class="offer">₹${p.price}</div>
+      </div>
+    </div>`;
   });
 }
 
-/* EDIT PRODUCT */
+/* ================= EDIT / DELETE ================= */
 function editProduct(i) {
   const p = products[i];
   title.value = p.title;
   mrp.value = p.mrp;
   price.value = p.price;
   specs = [...p.specs];
-  renderSpecList();
+  specList.innerHTML = specs.map(s => s.join(" : ")).join("<br>");
   editIndex = i;
   formTitle.innerText = "Edit Product";
   saveBtn.innerText = "Update Product";
 }
 
-/* DELETE PRODUCT */
 function deleteProduct(i) {
   if (confirm("Delete this product?")) {
     products.splice(i, 1);
-    renderProducts();
+    render();
   }
 }
 
-/* RESET FORM */
+/* ================= RESET ================= */
 function resetForm() {
   title.value = mrp.value = price.value = "";
   imageFile.value = "";
   specs = [];
-  renderSpecList();
+  specList.innerHTML = "";
   editIndex = null;
   formTitle.innerText = "Add Product";
-  saveBtn.innerText = "Add Product";
+  saveBtn.innerText = "Add Product Card";
 }
 </script>
 
