@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Direct Price Tag Creator (A4)</title>
+
+<style>
+@page { size: A4; margin: 5mm; }
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 10px;
+}
+
+/* PRINT SAFETY */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  #controls,
+  #printBtn {
+    display: none !important;
+  }
+}
+
+/* PRINT BUTTON */
+#printBtn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  padding: 10px 16px;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 999;
+}
+
+/* CONTROL PANEL */
+#controls {
+  background: #f4f4f4;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+}
+
+#controls input {
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 6px;
+}
+
+#controls button {
+  padding: 8px 14px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+/* A4 GRID */
+.wrapper {
+  display: grid;
+  grid-template-columns: 96.34mm 96.34mm;
+  grid-template-rows: 139.52mm 139.52mm;
+  gap: 6mm;
+}
+
+/* CARD */
+.card {
+  width: 96.34mm;
+  height: 139.52mm;
+  border: 1px solid #999;
+  padding: 5mm;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  gap: 3mm;
+  background: #e0e0e0;
+  padding: 3mm;
+}
+
+.header-title {
+  flex: 1;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* LOGO */
+.logo-box {
+  width: 10mm;
+  height: 10mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* IMAGE */
+.image-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4mm 0;
+  min-height: 30mm;
+  max-height: 34mm;
+}
+
+.product-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* BOTTOM */
+.bottom {
+  margin-top: auto;
+}
+
+/* SPEC TABLE */
+.spec {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.spec td {
+  border: 1px solid #aaa;
+  padding: 2mm;
+}
+
+.spec td:first-child {
+  font-weight: bold;
+  width: 45%;
+}
+
+.spec td:last-child {
+  text-align: right;
+}
+
+/* PRICE */
+.price-box {
+  background: #e0e0e0;
+  text-align: center;
+  margin-top: 4mm;
+  padding: 4mm;
+}
+
+.mrp {
+  font-size: 14px;
+  text-decoration: line-through;
+}
+
+.offer {
+  font-size: 42px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<button id="printBtn" onclick="window.print()">🖨️ Print</button>
+
+<!-- INPUT CONTROLS -->
+<div id="controls">
+  <h3>Add Product</h3>
+
+  <input id="title" placeholder="Product Title">
+
+  <!-- LOCAL IMAGE INPUT -->
+  <input type="file" id="imageFile" accept="image/*">
+
+  <input id="specKey" placeholder="Spec Name (e.g. Material)">
+  <input id="specVal" placeholder="Spec Value (e.g. Teak Wood)">
+  <button onclick="addSpec()">Add Spec</button>
+
+  <div id="specList"></div>
+
+  <input id="mrp" placeholder="MRP">
+  <input id="price" placeholder="Offer Price">
+
+  <button onclick="addProduct()">Add Product Card</button>
+</div>
+
+<!-- PRINT AREA -->
+<div class="wrapper" id="pages"></div>
+
+<script>
+/* STANDARD LOGO (FIXED) */
+const LOGO_URL =
+"https://drive.google.com/thumbnail?id=1SqBvCFsgBU3HSVlUbsroW73rV9M8l8ts&sz=w400";
+
+let specs = [];
+
+function addSpec() {
+  const k = specKey.value.trim();
+  const v = specVal.value.trim();
+  if (!k || !v) return;
+
+  specs.push([k, v]);
+  specKey.value = "";
+  specVal.value = "";
+  renderSpecPreview();
+}
+
+function renderSpecPreview() {
+  specList.innerHTML = specs.map(s => `${s[0]} : ${s[1]}`).join("<br>");
+}
+
+function addProduct() {
+  const t = title.value;
+  const m = mrp.value;
+  const p = price.value;
+  const file = imageFile.files[0];
+
+  if (!file) {
+    alert("Please select a product image");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    let specHTML = "";
+    specs.forEach(s => {
+      specHTML += `<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`;
+    });
+
+    pages.innerHTML += `
+    <div class="card">
+      <div class="header">
+        <div class="header-title">${t}</div>
+        <div class="logo-box">
+          <img src="${LOGO_URL}">
+        </div>
+      </div>
+
+      <div class="image-box">
+        <img src="${e.target.result}" class="product-img">
+      </div>
+
+      <div class="bottom">
+        <table class="spec">${specHTML}</table>
+
+        <div class="price-box">
+          <div class="mrp">MRP ₹${m}</div>
+          <div class="offer">₹${p}</div>
+        </div>
+      </div>
+    </div>
+    `;
+
+    /* RESET */
+    specs = [];
+    specList.innerHTML = "";
+    title.value = "";
+    mrp.value = "";
+    price.value = "";
+    imageFile.value = "";
+  };
+
+  reader.readAsDataURL(file);
+}
+</script>
+
+</body>
+</html>
