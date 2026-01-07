@@ -12,7 +12,7 @@ body {
   padding: 10px;
 }
 
-/* FORCE PRINT COLORS + HIDE CONTROLS */
+/* PRINT SAFETY */
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
@@ -20,7 +20,8 @@ body {
   }
   #controls,
   #printBtn,
-  .card-actions {
+  .card-actions,
+  .spec-del {
     display: none !important;
   }
 }
@@ -58,7 +59,7 @@ body {
   cursor: pointer;
 }
 
-/* A4 GRID – 4 TAGS */
+/* A4 GRID */
 .wrapper {
   display: grid;
   grid-template-columns: 96.34mm 96.34mm;
@@ -66,7 +67,7 @@ body {
   gap: 6mm;
 }
 
-/* CARD = 1/4 A4 */
+/* CARD */
 .card {
   width: 96.34mm;
   height: 139.52mm;
@@ -78,7 +79,7 @@ body {
   position: relative;
 }
 
-/* EDIT / DELETE (SCREEN ONLY) */
+/* PRODUCT EDIT / DELETE (SCREEN ONLY) */
 .card-actions {
   position: absolute;
   top: 3px;
@@ -126,7 +127,7 @@ body {
   object-fit: contain;
 }
 
-/* PRODUCT IMAGE */
+/* IMAGE */
 .image-box {
   flex: 1;
   display: flex;
@@ -164,11 +165,11 @@ body {
   text-align: right;
 }
 
-/* PRICE BOX (FIXED MARGIN) */
+/* PRICE BOX */
 .price-box {
   background: #e0e0e0;
   text-align: center;
-  margin-top: 5mm;   /* ✅ FIX */
+  margin-top: 5mm;
   padding: 4mm;
 }
 
@@ -179,6 +180,22 @@ body {
 
 .offer {
   font-size: 42px;
+  font-weight: bold;
+}
+
+/* SPEC LIST (INPUT PANEL) */
+#specList div {
+  display: flex;
+  justify-content: space-between;
+  background: #fff;
+  padding: 4px 6px;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.spec-del {
+  color: red;
+  cursor: pointer;
   font-weight: bold;
 }
 </style>
@@ -211,6 +228,7 @@ body {
 <div class="wrapper" id="pages"></div>
 
 <script>
+/* STANDARD LOGO */
 const LOGO_URL =
 "https://drive.google.com/thumbnail?id=1SqBvCFsgBU3HSVlUbsroW73rV9M8l8ts&sz=w400";
 
@@ -218,13 +236,32 @@ let products = [];
 let specs = [];
 let editIndex = null;
 
+/* ADD SPEC */
 function addSpec() {
   if (!specKey.value || !specVal.value) return;
   specs.push([specKey.value, specVal.value]);
   specKey.value = specVal.value = "";
-  specList.innerHTML = specs.map(s => s.join(" : ")).join("<br>");
+  renderSpecList();
 }
 
+/* REMOVE SPEC */
+function deleteSpec(i) {
+  specs.splice(i, 1);
+  renderSpecList();
+}
+
+/* RENDER SPEC LIST */
+function renderSpecList() {
+  specList.innerHTML = specs.map(
+    (s, i) => `
+      <div>
+        ${s[0]} : ${s[1]}
+        <span class="spec-del" onclick="deleteSpec(${i})">✖</span>
+      </div>`
+  ).join("");
+}
+
+/* SAVE / UPDATE PRODUCT */
 function saveProduct() {
   const file = imageFile.files[0];
   if (!file && editIndex === null) {
@@ -246,13 +283,14 @@ function saveProduct() {
     else products[editIndex] = product;
 
     resetForm();
-    render();
+    renderProducts();
   };
 
   file ? reader.readAsDataURL(file) : reader.onload();
 }
 
-function render() {
+/* RENDER PRODUCTS */
+function renderProducts() {
   pages.innerHTML = "";
   products.forEach((p, i) => {
     pages.innerHTML += `
@@ -283,30 +321,33 @@ function render() {
   });
 }
 
+/* EDIT PRODUCT */
 function editProduct(i) {
   const p = products[i];
   title.value = p.title;
   mrp.value = p.mrp;
   price.value = p.price;
   specs = [...p.specs];
-  specList.innerHTML = specs.map(s => s.join(" : ")).join("<br>");
+  renderSpecList();
   editIndex = i;
   formTitle.innerText = "Edit Product";
   saveBtn.innerText = "Update Product";
 }
 
+/* DELETE PRODUCT */
 function deleteProduct(i) {
   if (confirm("Delete this product?")) {
     products.splice(i, 1);
-    render();
+    renderProducts();
   }
 }
 
+/* RESET FORM */
 function resetForm() {
   title.value = mrp.value = price.value = "";
   imageFile.value = "";
   specs = [];
-  specList.innerHTML = "";
+  renderSpecList();
   editIndex = null;
   formTitle.innerText = "Add Product";
   saveBtn.innerText = "Add Product Card";
