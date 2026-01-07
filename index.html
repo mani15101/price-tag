@@ -59,7 +59,7 @@ body {
   cursor: pointer;
 }
 
-/* A4 GRID */
+/* A4 GRID – 4 TAGS */
 .wrapper {
   display: grid;
   grid-template-columns: 96.34mm 96.34mm;
@@ -79,7 +79,7 @@ body {
   position: relative;
 }
 
-/* PRODUCT EDIT / DELETE (SCREEN ONLY) */
+/* EDIT / DELETE (SCREEN ONLY) */
 .card-actions {
   position: absolute;
   top: 3px;
@@ -129,7 +129,6 @@ body {
 
 /* IMAGE */
 .image-box {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,6 +141,11 @@ body {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+/* BOTTOM FIX (CRITICAL) */
+.bottom {
+  margin-top: auto; /* ✅ forces price section to bottom */
 }
 
 /* SPEC TABLE */
@@ -182,22 +186,6 @@ body {
   font-size: 42px;
   font-weight: bold;
 }
-
-/* SPEC LIST (INPUT PANEL) */
-#specList div {
-  display: flex;
-  justify-content: space-between;
-  background: #fff;
-  padding: 4px 6px;
-  margin-bottom: 4px;
-  font-size: 13px;
-}
-
-.spec-del {
-  color: red;
-  cursor: pointer;
-  font-weight: bold;
-}
 </style>
 </head>
 
@@ -228,7 +216,6 @@ body {
 <div class="wrapper" id="pages"></div>
 
 <script>
-/* STANDARD LOGO */
 const LOGO_URL =
 "https://drive.google.com/thumbnail?id=1SqBvCFsgBU3HSVlUbsroW73rV9M8l8ts&sz=w400";
 
@@ -236,7 +223,7 @@ let products = [];
 let specs = [];
 let editIndex = null;
 
-/* ADD SPEC */
+/* SPEC HANDLING */
 function addSpec() {
   if (!specKey.value || !specVal.value) return;
   specs.push([specKey.value, specVal.value]);
@@ -244,24 +231,18 @@ function addSpec() {
   renderSpecList();
 }
 
-/* REMOVE SPEC */
 function deleteSpec(i) {
   specs.splice(i, 1);
   renderSpecList();
 }
 
-/* RENDER SPEC LIST */
 function renderSpecList() {
   specList.innerHTML = specs.map(
-    (s, i) => `
-      <div>
-        ${s[0]} : ${s[1]}
-        <span class="spec-del" onclick="deleteSpec(${i})">✖</span>
-      </div>`
+    (s, i) => `<div>${s[0]} : ${s[1]} <span class="spec-del" onclick="deleteSpec(${i})">✖</span></div>`
   ).join("");
 }
 
-/* SAVE / UPDATE PRODUCT */
+/* SAVE PRODUCT */
 function saveProduct() {
   const file = imageFile.files[0];
   if (!file && editIndex === null) {
@@ -309,19 +290,21 @@ function renderProducts() {
         <img src="${p.image}" class="product-img">
       </div>
 
-      <table class="spec">
-        ${p.specs.map(s => `<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}
-      </table>
+      <div class="bottom">
+        <table class="spec">
+          ${p.specs.map(s => `<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join("")}
+        </table>
 
-      <div class="price-box">
-        <div class="mrp">MRP ₹${p.mrp}</div>
-        <div class="offer">₹${p.price}</div>
+        <div class="price-box">
+          <div class="mrp">MRP ₹${p.mrp}</div>
+          <div class="offer">₹${p.price}</div>
+        </div>
       </div>
     </div>`;
   });
 }
 
-/* EDIT PRODUCT */
+/* EDIT / DELETE */
 function editProduct(i) {
   const p = products[i];
   title.value = p.title;
@@ -334,7 +317,6 @@ function editProduct(i) {
   saveBtn.innerText = "Update Product";
 }
 
-/* DELETE PRODUCT */
 function deleteProduct(i) {
   if (confirm("Delete this product?")) {
     products.splice(i, 1);
@@ -342,7 +324,6 @@ function deleteProduct(i) {
   }
 }
 
-/* RESET FORM */
 function resetForm() {
   title.value = mrp.value = price.value = "";
   imageFile.value = "";
